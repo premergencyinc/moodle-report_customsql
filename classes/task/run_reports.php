@@ -30,14 +30,16 @@ namespace report_customsql\task;
  * @copyright 2015 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class run_reports extends \core\task\scheduled_task {
+class run_reports extends \core\task\scheduled_task
+{
 
     /**
      * Get a descriptive name for this task (shown to admins).
      *
      * @return string
      */
-    public function get_name() {
+    public function get_name()
+    {
         return get_string('crontask', 'report_customsql');
     }
 
@@ -50,7 +52,8 @@ class run_reports extends \core\task\scheduled_task {
      *
      * @return boolean
      */
-    public function execute() {
+    public function execute()
+    {
         global $CFG, $DB;
 
         require_once(dirname(__FILE__) . '/../../locallib.php');
@@ -59,6 +62,8 @@ class run_reports extends \core\task\scheduled_task {
 
         list($startofthisweek, $startoflastweek) = report_customsql_get_week_starts($timenow);
         list($startofthismonth) = report_customsql_get_month_starts($timenow);
+
+        list($next_semiannual_start, $previous_semiannual_start) = report_customsql_get_semiannual_starts($timenow);
 
         mtrace("... Looking for old temp CSV files to delete.");
         $numdeleted = report_customsql_delete_old_temp_files($startoflastweek);
@@ -70,11 +75,16 @@ class run_reports extends \core\task\scheduled_task {
         $dailyreportstorun = report_customsql_get_ready_to_run_daily_reports($timenow);
 
         // Get weekly and monthly scheduled reports.
-        $scheduledreportstorun = $DB->get_records_select('report_customsql_queries',
-                                            "(runable = 'weekly' AND lastrun < :startofthisweek) OR
+        $scheduledreportstorun = $DB->get_records_select(
+            'report_customsql_queries',
+            "(runable = 'weekly' AND lastrun < :startofthisweek) OR
                                              (runable = 'monthly' AND lastrun < :startofthismonth)",
-                                            ['startofthisweek' => $startofthisweek,
-                                                  'startofthismonth' => $startofthismonth], 'lastrun');
+            [
+                'startofthisweek' => $startofthisweek,
+                'startofthismonth' => $startofthismonth
+            ],
+            'lastrun'
+        );
 
         // All reports ready to run.
         $reportstorun = array_merge($dailyreportstorun, $scheduledreportstorun);

@@ -40,7 +40,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 // Start the page.
 admin_externalpage_setup('report_customsql');
-$context = context_system::instance();
+$context = context_system::instance();;
 require_capability('report/customsql:view', $context);
 
 $categories = $DB->get_records('report_customsql_categories', null, 'name, id');
