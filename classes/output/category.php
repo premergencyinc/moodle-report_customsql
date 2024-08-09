@@ -31,7 +31,8 @@ use report_customsql\local\category as report_category;
  * @copyright  2021 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class category implements renderable, templatable {
+class category implements renderable, templatable
+{
     /** @var report_category Category object. */
     private $category;
 
@@ -67,8 +68,16 @@ class category implements renderable, templatable {
      * @param bool $addnewquerybtn Show 'Add new query' button or not.
      * @param moodle_url|null $returnurl Return url.
      */
-    public function __construct(report_category $category, context $context, bool $expandable = false, int $showcat = 0,
-            int $hidecat = 0, bool $showonlythislink = false, bool $addnewquerybtn = true, moodle_url $returnurl = null) {
+    public function __construct(
+        report_category $category,
+        context $context,
+        bool $expandable = false,
+        int $showcat = 0,
+        int $hidecat = 0,
+        bool $showonlythislink = false,
+        bool $addnewquerybtn = true,
+        moodle_url $returnurl = null
+    ) {
         $this->category = $category;
         $this->context = $context;
         $this->expandable = $expandable;
@@ -79,7 +88,8 @@ class category implements renderable, templatable {
         $this->returnurl = $returnurl ?? $this->category->get_url();
     }
 
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output)
+    {
 
         $queriesdata = $this->category->get_queries_data();
 
@@ -105,11 +115,23 @@ class category implements renderable, templatable {
 
         $addquerybutton = '';
         if ($this->addnewquerybtn && has_capability('report/customsql:definequeries', $this->context)) {
-            $addnewqueryurl = report_customsql_url('edit.php', ['categoryid' => $this->category->get_id(),
-                'returnurl' => $this->returnurl->out_as_local_url(false)]);
-            $addquerybutton = $output->single_button($addnewqueryurl, get_string('addreport', 'report_customsql'), 'post',
-                                        ['class' => 'mb-1']);
+            $addnewqueryurl = report_customsql_url('edit.php', [
+                'categoryid' => $this->category->get_id(),
+                'returnurl' => $this->returnurl->out_as_local_url(false)
+            ]);
+            $addquerybutton = $output->single_button(
+                $addnewqueryurl,
+                get_string('addreport', 'report_customsql'),
+                'post',
+                ['class' => 'mb-1']
+            );
         }
+
+        // var_dump($this->category->get_statistic());
+        // array(5) { ["manual"]=> int(1) ["daily"]=> int(1) 
+        // ["weekly"]=> int(1) ["monthly"]=> int(1) ["semiannually"]=> int(1) }
+        // var_dump($this->category);
+        // exit;
 
         return [
             'id' => $this->category->get_id(),
@@ -130,7 +152,8 @@ class category implements renderable, templatable {
      *
      * @return string
      */
-    private function get_showing_state(): string {
+    private function get_showing_state(): string
+    {
         $categoryid = $this->category->get_id();
 
         return $categoryid == $this->showcat && $categoryid != $this->hidecat ? 'shown' : 'hidden';
@@ -141,7 +164,8 @@ class category implements renderable, templatable {
      *
      * @return string The url.
      */
-    private function get_link_reference(): string {
+    private function get_link_reference(): string
+    {
         $categoryid = $this->category->get_id();
         if ($categoryid == $this->showcat) {
             $params = ['hidecat' => $categoryid];
